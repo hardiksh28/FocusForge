@@ -37,7 +37,10 @@ router.post("/create", authMiddleware, async (req, res) => {
             .select()
             .single();
 
-        if (createError) return res.status(500).json({ message: createError.message });
+        if (createError) {
+            console.error("Guild Create Error:", createError);
+            return res.status(500).json({ message: `Database error: ${createError.message}. Did you run the SQL setup?` });
+        }
 
         // Set user's guild_id
         await supabase.from('users').update({ guild_id: guild.id }).eq('id', req.userId);

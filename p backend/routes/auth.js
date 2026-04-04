@@ -209,7 +209,9 @@ router.post("/google", async (req, res) => {
                     email: googleEmail.toLowerCase(),
                     password: 'GOOGLE_AUTH_USER', // Placeholder
                     username: googleName.replace(/\s+/g, '_').substring(0, 20) + '_' + Math.floor(Math.random() * 1000), // Append random for unique temp
-                    avatar: googleAvatar
+                    avatar: googleAvatar,
+                    owned_themes: ['starfield'],
+                    active_theme: 'starfield'
                 }])
                 .select()
                 .single();
@@ -349,9 +351,10 @@ router.post("/buy-theme", authMiddleware, async (req, res) => {
 
         const { data: user } = await supabase.from('users').select('gold, owned_themes').eq('id', req.userId).single();
         if (user.gold < price) return res.status(400).json({ message: "Not enough gold" });
-        if (user.owned_themes?.includes(theme)) return res.status(400).json({ message: "You already own this theme" });
+        const currentThemes = Array.isArray(user.owned_themes) ? user.owned_themes : ['starfield'];
+        if (currentThemes.includes(theme)) return res.status(400).json({ message: "You already own this theme" });
 
-        const newThemes = [...(user.owned_themes || ['starfield']), theme];
+        const newThemes = [...currentThemes, theme];
         await supabase.from('users').update({ gold: user.gold - price, owned_themes: newThemes }).eq('id', req.userId);
 
         res.json({ message: `Theme "${theme}" purchased!`, gold: user.gold - price, ownedThemes: newThemes });
