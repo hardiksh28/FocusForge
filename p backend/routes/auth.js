@@ -198,14 +198,17 @@ router.post("/google", async (req, res) => {
             return res.status(500).json({ message: findError.message || "Database error" });
         }
 
+        let isNewUser = false;
+
         // 3. If user doesn't exist, create one
         if (!user) {
+            isNewUser = true;
             const { data: newUser, error: insertError } = await supabase
                 .from('users')
                 .insert([{
                     email: googleEmail.toLowerCase(),
                     password: 'GOOGLE_AUTH_USER', // Placeholder
-                    username: googleName.replace(/\s+/g, '_').substring(0, 20), // Sanitize username
+                    username: googleName.replace(/\s+/g, '_').substring(0, 20) + '_' + Math.floor(Math.random() * 1000), // Append random for unique temp
                     avatar: googleAvatar
                 }])
                 .select()
@@ -225,9 +228,47 @@ router.post("/google", async (req, res) => {
             message: "Google login successful",
             token,
             user: safeUser(user),
+            isNewUser
         });
     } catch (error) {
         console.error("Google auth catch:", error);
+        res.status(500).json({ message: error.message || "Server error" });
+    }
+});
+
+// ─── UPDATE PROFILE (Post-Google Signup) ────────────────
+router.post("/update-profile", authMiddleware, async (req, res) => {
+    try {
+        const { username, avatar } = req.body;
+
+        if (!username || !avatar) {
+            return res.status(400).json({ message: "Username and avatar are required" });
+        }
+
+        // Sanity Check Username
+        const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+        if (!usernameRegex.test(username)) {
+            return res.status(400).json({ message: "Username must be 3-20 characters (alphanumeric + underscores)" });
+        }
+
+        // Check if username taken (excluding self)
+        const { data: existing } = await supabase.from('users').select('id').eq('username', username).single();
+        if (existing && existing.id !== req.userId) {
+            return res.status(400).json({ message: "Username already taken" });
+        }
+
+        const { data, error } = await supabase
+            .from('users')
+            .update({ username, avatar })
+            .eq('id', req.userId)
+            .select()
+            .single();
+
+        if (error) return res.status(500).json({ message: error.message });
+
+        res.json({ message: "Profile updated!", user: safeUser(data) });
+    } catch (error) {
+        console.error("Profile update catch:", error);
         res.status(500).json({ message: error.message || "Server error" });
     }
 });

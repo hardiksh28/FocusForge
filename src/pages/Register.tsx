@@ -33,6 +33,7 @@ export default function Register() {
         window.google.accounts.id.initialize({
           client_id: GOOGLE_CLIENT_ID,
           callback: handleGoogleResponse,
+          auto_select: true,
         });
         window.google.accounts.id.renderButton(
           document.getElementById('google-register-btn'),
@@ -48,8 +49,12 @@ export default function Register() {
     setError("");
     setIsLoading(true);
     try {
-      await api.auth.googleLogin({ credential: response.credential });
-      navigate('/hub');
+      const res = await api.auth.googleLogin({ credential: response.credential });
+      if (res.isNewUser) {
+        navigate('/onboarding');
+      } else {
+        navigate('/hub');
+      }
     } catch (err: any) {
       setError(err.message || "Google sign-up failed");
     } finally {

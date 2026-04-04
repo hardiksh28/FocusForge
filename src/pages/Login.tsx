@@ -32,7 +32,7 @@ export default function Login() {
         window.google.accounts.id.initialize({
           client_id: GOOGLE_CLIENT_ID,
           callback: handleGoogleResponse,
-          auto_select: false,
+          auto_select: true,
           cancel_on_tap_outside: true,
         });
         window.google.accounts.id.renderButton(
@@ -59,10 +59,14 @@ export default function Login() {
     setError("");
     setIsLoading(true);
     try {
-      await api.auth.googleLogin({
+      const res = await api.auth.googleLogin({
         credential: response.credential
       });
-      navigate('/hub');
+      if (res.isNewUser) {
+        navigate('/onboarding');
+      } else {
+        navigate('/hub');
+      }
     } catch (err: any) {
       setError(err.message || "Google sign-in failed");
     } finally {

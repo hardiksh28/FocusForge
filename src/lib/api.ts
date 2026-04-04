@@ -54,6 +54,22 @@ export const api = {
         localStorage.setItem('token', payload.token);
         localStorage.setItem('user', JSON.stringify(payload.user));
       }
+      return payload as { token: string; user: any; isNewUser: boolean };
+    },
+    updateProfile: async (data: { username: string; avatar: string }) => {
+      const res = await fetch(`${API_URL}/auth/update-profile`, {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify(data)
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.message || 'Profile update failed');
+      }
+      const payload = await res.json();
+      if (payload.user) {
+        localStorage.setItem('user', JSON.stringify(payload.user));
+      }
       return payload;
     },
     me: async () => {

@@ -3,6 +3,7 @@ import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Hub from './pages/Hub';
+import Onboarding from './pages/Onboarding';
 import { ThemeProvider } from './context/ThemeContext';
 
 export default function App() {
@@ -14,6 +15,7 @@ export default function App() {
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/hub" element={<Hub />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
