@@ -13,12 +13,13 @@ function generateToken(userId) {
 
 // Helper: extract safe user object for response
 function safeUser(user) {
+    const calculatedLevel = Math.floor((user.xp || 0) / 1000) + 1;
     return {
         id: user.id,
         email: user.email,
         username: user.username,
         avatar: user.avatar,
-        level: user.level,
+        level: calculatedLevel, // Calculate dynamically
         xp: user.xp,
         gold: user.gold,
         points: user.points,
@@ -291,6 +292,10 @@ router.get("/me", authMiddleware, async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
+        
+        // Ensure level is dynamic in the /me response too
+        user.level = Math.floor((user.xp || 0) / 1000) + 1;
+        
         res.json(user);
     } catch (error) {
         console.error("Me catch:", error);
