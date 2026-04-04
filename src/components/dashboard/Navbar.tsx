@@ -21,7 +21,7 @@ export const DashboardNavbar: FC<NavbarProps> = ({ currentView, onViewChange, xp
   const navRef = useRef<HTMLDivElement>(null);
   const buttonsRef = useRef<Map<string, HTMLButtonElement>>(new Map());
 
-  // Animated sliding indicator
+  // Animated sliding indicator (Desktop only)
   useEffect(() => {
     const btn = buttonsRef.current.get(currentView);
     if (btn && navRef.current) {
@@ -35,117 +35,97 @@ export const DashboardNavbar: FC<NavbarProps> = ({ currentView, onViewChange, xp
   }, [currentView]);
 
   return (
-    <motion.nav
-      initial={{ y: -20, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ type: 'spring', stiffness: 200, damping: 20 }}
-      className="flex items-center justify-between px-8 py-3 border-b border-white/5 bg-black/60 backdrop-blur-2xl sticky top-0 z-50"
-    >
-      {/* Left: Logo + Nav */}
-      <div className="flex items-center gap-8">
-        {/* Logo */}
-        <motion.div 
-          className="flex items-center gap-3 cursor-pointer group" 
-          onClick={() => onViewChange('hub')}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-        >
-          <div className="relative w-9 h-9 rounded-xl border border-white/20 flex items-center justify-center bg-gradient-to-br from-white/10 to-white/[0.02] overflow-hidden group-hover:border-white/40 transition-colors">
-            <span className="text-white font-black text-base relative z-10">F</span>
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+    <>
+      {/* Top Bar (Universal) */}
+      <motion.nav
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        className="flex items-center justify-between px-4 md:px-8 py-3 border-b border-white/5 bg-black/60 backdrop-blur-2xl sticky top-0 z-50"
+      >
+        {/* Left: Logo */}
+        <div className="flex items-center gap-4 md:gap-8">
+          <motion.div 
+            className="flex items-center gap-3 cursor-pointer group" 
+            onClick={() => onViewChange('hub')}
+          >
+            <div className="relative w-8 h-8 md:w-9 md:h-9 rounded-xl border border-white/20 flex items-center justify-center bg-gradient-to-br from-white/10 to-white/[0.02] overflow-hidden">
+              <span className="text-white font-black text-sm md:text-base relative z-10">F</span>
+            </div>
+            <span className="font-bold text-lg md:text-xl tracking-tight text-white hidden sm:block">
+              Focus<span className="text-white/50">Forge</span>
+            </span>
+          </motion.div>
+          
+          {/* Desktop Nav Items */}
+          <div className="hidden md:flex items-center gap-1">
+            <div className="h-5 w-px bg-white/10 mx-4" />
+            <div ref={navRef} className="relative flex items-center gap-1">
+              <motion.div
+                className="absolute h-full bg-white/10 rounded-xl"
+                animate={{ left: indicatorStyle.left, width: indicatorStyle.width }}
+                transition={{ type: 'spring', stiffness: 350, damping: 30 }}
+              />
+              {navItems.map(({ key, label, icon: Icon }) => (
+                <button
+                  key={key}
+                  ref={(el) => { if (el) buttonsRef.current.set(key, el); }}
+                  onClick={() => onViewChange(key)}
+                  className={`relative flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-colors duration-200 ${
+                    currentView === key ? 'text-white' : 'text-white/40 hover:text-white/70'
+                  }`}
+                >
+                  <Icon size={15} />
+                  <span>{label}</span>
+                </button>
+              ))}
+            </div>
           </div>
-          <span className="font-bold text-xl tracking-tight text-white">
-            Focus<span className="text-white/50">Forge</span>
-          </span>
-        </motion.div>
-        
-        <div className="h-5 w-px bg-white/10" />
-        
-        {/* Nav Items with sliding indicator */}
-        <div ref={navRef} className="relative flex items-center gap-1">
-          {/* Sliding background indicator */}
-          <motion.div
-            className="absolute h-full bg-white/10 rounded-xl"
-            animate={{ left: indicatorStyle.left, width: indicatorStyle.width }}
-            transition={{ type: 'spring', stiffness: 350, damping: 30 }}
-          />
+        </div>
 
-          {navItems.map(({ key, label, icon: Icon }) => (
-            <button
-              key={key}
-              ref={(el) => { if (el) buttonsRef.current.set(key, el); }}
-              onClick={() => onViewChange(key)}
-              className={`relative flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-colors duration-200 ${
-                currentView === key ? 'text-white' : 'text-white/40 hover:text-white/70'
-              }`}
-            >
-              <Icon size={15} />
-              <span>{label}</span>
-            </button>
-          ))}
+        {/* Right: Stats & Logout */}
+        <div className="flex items-center gap-2 md:gap-4">
+          <div className="flex items-center gap-2 bg-blue-500/10 text-blue-400 px-2 md:px-3.5 py-1 md:py-1.5 rounded-full text-[10px] md:text-xs font-bold border border-blue-500/15">
+            <Zap size={10} className="fill-current hidden xs:block" />
+            <span>{xp.toLocaleString()} <span className="opacity-50">XP</span></span>
+          </div>
+
+          <div className="flex items-center gap-2 bg-amber-500/10 text-amber-400 px-2 md:px-3.5 py-1 md:py-1.5 rounded-full text-[10px] md:text-xs font-bold border border-amber-500/15">
+            <Flame size={10} className="fill-current hidden xs:block" />
+            <span>{gold.toLocaleString()} <span className="opacity-50">G</span></span>
+          </div>
+
+          <button onClick={onLogout} className="p-2 text-white/30 hover:text-red-400 transition-colors">
+            <LogOut size={18} />
+          </button>
+        </div>
+      </motion.nav>
+
+      {/* Mobile Bottom Tab Bar */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 px-6 pb-6 pointer-events-none">
+        <div className="bg-[#111]/80 backdrop-blur-3xl border border-white/10 rounded-[2rem] p-2 flex items-center justify-around pointer-events-auto shadow-2xl">
+          {navItems.map(({ key, label, icon: Icon }) => {
+            const isActive = currentView === key;
+            return (
+              <button
+                key={key}
+                onClick={() => onViewChange(key)}
+                className={`flex flex-col items-center gap-1 px-4 py-2 rounded-2xl transition-all ${
+                  isActive ? 'text-forge-accent' : 'text-white/40'
+                }`}
+              >
+                <Icon size={20} className={isActive ? 'fill-forge-accent/20' : ''} />
+                <span className="text-[10px] font-black uppercase tracking-widest">{label}</span>
+                {isActive && (
+                  <motion.div 
+                    layoutId="activeTab" 
+                    className="absolute -bottom-1 w-1 h-1 bg-forge-accent rounded-full" 
+                  />
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
-
-      {/* Right: Stats + Logout */}
-      <div className="flex items-center gap-4">
-        {/* XP Badge */}
-        <motion.div 
-          key={xp}
-          initial={{ scale: 1.2 }}
-          animate={{ scale: 1 }}
-          transition={{ type: 'spring', stiffness: 300 }}
-          className="flex items-center gap-2 bg-blue-500/10 text-blue-400 px-3.5 py-1.5 rounded-full text-xs font-bold border border-blue-500/15 backdrop-blur-sm"
-        >
-          <Zap size={13} className="fill-current" />
-          <AnimatePresence mode="popLayout">
-            <motion.span
-              key={xp}
-              initial={{ y: -8, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 8, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              {xp.toLocaleString()}
-            </motion.span>
-          </AnimatePresence>
-          <span className="text-blue-400/60">XP</span>
-        </motion.div>
-
-        {/* Gold Badge */}
-        <motion.div 
-          key={gold}
-          initial={{ scale: 1.2 }}
-          animate={{ scale: 1 }}
-          transition={{ type: 'spring', stiffness: 300 }}
-          className="flex items-center gap-2 bg-amber-500/10 text-amber-400 px-3.5 py-1.5 rounded-full text-xs font-bold border border-amber-500/15 backdrop-blur-sm"
-        >
-          <Flame size={13} className="fill-current" />
-          <AnimatePresence mode="popLayout">
-            <motion.span
-              key={gold}
-              initial={{ y: -8, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 8, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              {gold.toLocaleString()}
-            </motion.span>
-          </AnimatePresence>
-          <span className="text-amber-400/60">Gold</span>
-        </motion.div>
-
-        <div className="h-5 w-px bg-white/10 mx-1" />
-
-        {/* Logout */}
-        <motion.button 
-          onClick={onLogout} 
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="text-sm font-medium text-white/30 hover:text-red-400 transition-colors flex items-center gap-2 px-3 py-1.5 rounded-xl hover:bg-red-500/5"
-        >
-          <LogOut size={15} />
-        </motion.button>
-      </div>
-    </motion.nav>
+    </>
   );
 };

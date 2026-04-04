@@ -85,18 +85,18 @@ export default function Hub() {
         }}
       />
       
-      <main className="max-w-7xl mx-auto px-8 pt-12">
+      <main className="max-w-7xl mx-auto px-4 md:px-8 pt-8 md:pt-12">
         {currentView === 'hub' ? (
-          <div className="grid grid-cols-12 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8">
             {/* Left Column: Main Content */}
-            <div className="col-span-8 flex flex-col gap-8">
+            <div className="col-span-1 md:col-span-8 flex flex-col gap-6 md:gap-8 order-2 md:order-1">
               <HeroHeader user={user} />
               
-              <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-4 md:gap-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <LayoutDashboard size={20} className="text-forge-accent" />
-                    <h3 className="text-xl font-black tracking-tight">Active Quests</h3>
+                    <h3 className="text-lg md:text-xl font-black tracking-tight">Active Quests</h3>
                   </div>
                 </div>
                 
@@ -109,17 +109,17 @@ export default function Hub() {
                     />
                   ))}
                   {quests.filter(q => !q.completed).length === 0 && (
-                    <div className="text-center p-12 glass-card border border-white/5 text-white/20 font-bold flex flex-col items-center gap-3">
-                      <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center">
+                    <div className="text-center p-8 md:p-12 glass-card border border-white/5 text-white/20 font-bold flex flex-col items-center gap-3">
+                      <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/5 flex items-center justify-center">
                         <Plus size={24} />
                       </div>
-                      <p>No active quests. Time to start something new.</p>
+                      <p className="text-sm">No active quests. Time to start something new.</p>
                     </div>
                   )}
                   
                   <button 
                     onClick={() => setIsAddQuestOpen(true)}
-                    className="w-full py-4 border-2 border-dashed border-white/5 rounded-[2rem] text-white/20 font-bold hover:border-white/10 hover:text-white/40 transition-all flex items-center justify-center gap-2"
+                    className="w-full py-4 border-2 border-dashed border-white/5 rounded-2xl md:rounded-[2rem] text-white/20 font-bold hover:border-white/10 hover:text-white/40 transition-all flex items-center justify-center gap-2 text-sm"
                   >
                     <Plus size={18} /> Add New Quest
                   </button>
@@ -146,7 +146,7 @@ export default function Hub() {
             </div>
 
             {/* Right Column: Sidebar Widgets */}
-            <div className="col-span-4 flex flex-col gap-8">
+            <div className="col-span-1 md:col-span-4 flex flex-col gap-6 md:gap-8 order-1 md:order-2">
               <div className="grid grid-cols-1 gap-4">
                  <DailySignIn user={user} onClaim={loadData} />
               </div>

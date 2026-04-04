@@ -63,7 +63,7 @@ export default function Navbar() {
         <div className="flex items-center gap-3 md:gap-6">
           <Link 
             to="/login"
-            className="hidden sm:block text-sm font-medium text-white/70 hover:text-white transition-colors"
+            className="hidden xs:block text-sm font-medium text-white/70 hover:text-white transition-colors"
           >
             Login
           </Link>
@@ -106,9 +106,13 @@ export default function Navbar() {
                   {item}
                 </a>
               ))}
-              <a href="#" className="text-lg font-bold text-white hover:text-forge-primary transition-colors py-2 border-b border-white/5">
-                Login
-              </a>
+                <Link 
+                  to="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="text-lg font-bold text-white hover:text-forge-accent transition-colors py-2 border-b border-white/5"
+                >
+                  Login
+                </Link>
             </motion.div>
           )}
         </AnimatePresence>
