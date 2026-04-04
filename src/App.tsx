@@ -44,15 +44,44 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
 };
 
+// Public Route Wrapper (Redirects to Hub if already logged in)
+const PublicRoute = ({ children }: { children: React.ReactNode }) => {
+  const [isChecking, setIsChecking] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setIsAuthenticated(false);
+        setIsChecking(false);
+        return;
+      }
+      try {
+        await api.auth.me();
+        setIsAuthenticated(true);
+      } catch (e) {
+        setIsAuthenticated(false);
+      } finally {
+        setIsChecking(false);
+      }
+    };
+    checkAuth();
+  }, []);
+
+  if (isChecking) return null;
+  return isAuthenticated ? <Navigate to="/hub" replace /> : <>{children}</>;
+};
+
 export default function App() {
   return (
     <Router>
       <ThemeProvider>
         <div className="min-h-screen bg-forge-bg text-forge-text selection:bg-forge-accent selection:text-white relative">
           <Routes>
-            <Route path="/" element={<Landing />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+            <Route path="/" element={<PublicRoute><Landing /></PublicRoute>} />
+            <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+            <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
             <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
             <Route path="/hub" element={<ProtectedRoute><Hub /></ProtectedRoute>} />
             <Route path="*" element={<Navigate to="/" replace />} />
