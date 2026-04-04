@@ -1,5 +1,24 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Analytics } from "@vercel/analytics/react";
 import React, { useState, useEffect } from 'react';
+import ReactGA from "react-ga4";
+
+// Initialize GA4
+const GA_ID = (import.meta as any).env.VITE_GA_MEASUREMENT_ID;
+if (GA_ID) {
+  ReactGA.initialize(GA_ID);
+}
+
+// Track page views on route change
+const GA4Tracker = () => {
+  const location = useLocation();
+  useEffect(() => {
+    if (GA_ID) {
+      ReactGA.send({ hitType: "pageview", page: location.pathname });
+    }
+  }, [location]);
+  return null;
+};
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -76,6 +95,7 @@ const PublicRoute = ({ children }: { children: React.ReactNode }) => {
 export default function App() {
   return (
     <Router>
+      <GA4Tracker />
       <ThemeProvider>
         <div className="min-h-screen bg-forge-bg text-forge-text selection:bg-forge-accent selection:text-white relative">
           <Routes>
@@ -86,6 +106,7 @@ export default function App() {
             <Route path="/hub" element={<ProtectedRoute><Hub /></ProtectedRoute>} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          <Analytics />
         </div>
       </ThemeProvider>
     </Router>

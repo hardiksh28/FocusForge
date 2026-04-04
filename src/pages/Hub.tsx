@@ -72,7 +72,7 @@ export default function Hub() {
         gold={totalGold}
         onLogout={() => {
           api.auth.logout();
-          navigate('/');
+          window.location.href = '/login';
         }}
       />
 
