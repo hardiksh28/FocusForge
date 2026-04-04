@@ -18,7 +18,6 @@ export default function Landing() {
         <About />
         <Features />
         <Feedback />
-        <Pricing />
         <CTA />
       </main>
       <Footer />

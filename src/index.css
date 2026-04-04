@@ -5,13 +5,15 @@
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Space Grotesk", sans-serif;
   
-  --color-forge-charcoal: #000000;
-  --color-forge-primary: #3B82F6;
-  --color-forge-glow: #60A5FA;
-  --color-forge-neon: #00F2FF;
-  
-  --color-bg-dark: #0a0a0a;
-  --color-card-dark: #1a1a1a;
+  --color-forge-bg: var(--forge-bg, #0a0a0a);
+  --color-forge-card: var(--forge-card, #1a1a1a);
+  --color-forge-accent: var(--forge-accent, #3B82F6);
+  --color-forge-glow: var(--forge-glow, rgba(59, 130, 246, 0.5));
+  --color-forge-text: var(--forge-text, #ffffff);
+  --color-forge-secondary: var(--forge-secondary, rgba(255, 255, 255, 0.4));
+
+  --color-bg-dark: var(--forge-bg, #0a0a0a);
+  --color-card-dark: var(--forge-card, #1a1a1a);
   --color-accent-purple: #a855f7;
   --color-accent-yellow: #eab308;
   --color-accent-green: #22c55e;
@@ -20,31 +22,52 @@
 
 @layer base {
   body {
-    @apply bg-forge-charcoal text-white font-sans antialiased;
+    background-color: var(--forge-bg, #0a0a0a);
+    color: var(--forge-text, #ffffff);
+    @apply font-sans antialiased;
   }
 }
 
 @layer utilities {
   .glass-card {
-    background-color: rgba(26, 26, 26, 0.8);
+    background-color: var(--forge-card, rgba(26, 26, 26, 0.8));
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 2rem;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    transition: all 0.3s ease-in-out;
   }
+
+  .theme-light .glass-card {
+    background-color: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+  }
+
   .text-glow {
-    text-shadow: 0 0 15px rgba(59, 130, 246, 0.6);
+    text-shadow: 0 0 15px var(--forge-glow, rgba(59, 130, 246, 0.6));
   }
+
+  .theme-light .text-glow {
+    text-shadow: 0 0 10px var(--forge-glow, rgba(245, 158, 11, 0.2));
+  }
+
+  .bg-grid {
+    background-size: 30px 30px;
+    background-image: 
+      radial-gradient(circle, var(--forge-accent, rgba(0,0,0,0.05)) 1px, transparent 1px);
+    opacity: 0.15;
+  }
+
   .shiny-surface {
     background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0) 100%);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255,255,255,0.1);
   }
-  .bg-pure-black {
-    background-color: #000000;
-  }
-  .bg-shiny-gradient {
-    background: radial-gradient(circle at 50% 0%, #111 0%, #000 100%);
+
+  .theme-light .shiny-surface {
+    background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 100%);
+    border: 1px solid rgba(0,0,0,0.05);
   }
 }
 
