@@ -77,8 +77,12 @@ const MemberCard: FC<{ member: GuildMember; isOwner: boolean; index: number }> =
       className="flex items-center justify-between p-4 bg-white/[0.02] rounded-2xl border border-white/5 hover:bg-white/5 transition-all group"
     >
       <div className="flex items-center gap-4">
-        <div className="w-11 h-11 rounded-xl bg-forge-card flex items-center justify-center text-xl border border-white/10">
-          {member.avatar}
+        <div className="w-11 h-11 rounded-xl bg-forge-card flex items-center justify-center overflow-hidden text-xl border border-white/10">
+          {member.avatar?.startsWith('http') ? (
+            <img src={member.avatar} alt={member.username} className="w-full h-full object-cover" />
+          ) : (
+            member.avatar
+          )}
         </div>
         <div>
           <div className="flex items-center gap-2">

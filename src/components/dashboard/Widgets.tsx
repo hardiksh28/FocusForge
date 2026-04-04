@@ -13,7 +13,11 @@ export const HeroHeader: FC<{ user?: any }> = ({ user }) => (
     <div className="relative">
         <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-gradient-to-br from-forge-accent to-forge-secondary p-1">
         <div className="w-full h-full rounded-full bg-forge-card flex items-center justify-center overflow-hidden text-4xl md:text-5xl">
-          {user?.avatar || '🦊'}
+          {user?.avatar?.startsWith('http') ? (
+            <img src={user.avatar} alt={user.username} className="w-full h-full object-cover" />
+          ) : (
+            user?.avatar || '🦊'
+          )}
         </div>
       </div>
       <div className="absolute -bottom-1 -right-1 bg-amber-500 text-black text-[10px] font-black px-2 py-0.5 rounded-full border-2 border-forge-card shadow-lg">
